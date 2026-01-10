@@ -1,17 +1,39 @@
+# Dependencies
 node_modules
-.env.local
+
+# Next.js
+.next
+out
+build
+
+.next
+
+# Environment files
 .env
-.venv/
+.env.local
+.env.*.local
 
-*.pyc
-__pycache__/
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-instance/
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
 
-.pytest_cache/
-.coverage
-htmlcov/
+# OS
+.DS_Store
+Thumbs.db
 
-dist/
-build/
-*.egg-info/
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# Testing
+coverage

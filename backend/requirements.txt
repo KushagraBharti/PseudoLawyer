@@ -1,6 +1,0 @@
-Flask
-flask-cors
-boto3
-python-dotenv
-anthropic
-langchain
