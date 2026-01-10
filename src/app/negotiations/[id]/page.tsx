@@ -242,13 +242,14 @@ export default function NegotiationChatPage() {
                         {negotiation?.status === 'active' && (
                             <div className="p-4 border-t border-white/10">
                                 <form onSubmit={handleSend} className="flex gap-2">
-                                    <Input
-                                        value={message}
-                                        onChange={(e) => setMessage(e.target.value)}
-                                        placeholder="Type your message... (use @Sudo to ask AI)"
-                                        className="flex-1"
-                                        disabled={sending}
-                                    />
+                                    <div className="flex-1">
+                                        <Input
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            placeholder="Type your message... (use @Sudo to ask AI)"
+                                            disabled={sending}
+                                        />
+                                    </div>
                                     <Button
                                         type="button"
                                         variant="secondary"
