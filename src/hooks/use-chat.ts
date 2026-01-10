@@ -9,10 +9,29 @@ interface UseChatOptions {
     negotiationId: string;
 }
 
+// Check if message should trigger AI response
+function shouldTriggerAI(content: string): boolean {
+    const lowerContent = content.toLowerCase();
+
+    // Trigger on @sudo, @ai, or direct questions to Sudo
+    const triggers = [
+        '@sudo',
+        '@ai',
+        'sudo,',
+        'hey sudo',
+        'hi sudo',
+        'sudo help',
+        'sudo?',
+    ];
+
+    return triggers.some(trigger => lowerContent.includes(trigger));
+}
+
 export function useChat({ negotiationId }: UseChatOptions) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
 
     useEffect(() => {
         const supabase = createClient();
@@ -23,9 +42,9 @@ export function useChat({ negotiationId }: UseChatOptions) {
             const { data, error } = await supabase
                 .from('messages')
                 .select(`
-          *,
-          sender:profiles(id, full_name, email)
-        `)
+                    *,
+                    sender:profiles(id, full_name, email)
+                `)
                 .eq('negotiation_id', negotiationId)
                 .order('created_at', { ascending: true });
 
@@ -55,9 +74,9 @@ export function useChat({ negotiationId }: UseChatOptions) {
                     const { data } = await supabase
                         .from('messages')
                         .select(`
-              *,
-              sender:profiles(id, full_name, email)
-            `)
+                            *,
+                            sender:profiles(id, full_name, email)
+                        `)
                         .eq('id', payload.new.id)
                         .single();
 
@@ -73,6 +92,7 @@ export function useChat({ negotiationId }: UseChatOptions) {
         };
     }, [negotiationId]);
 
+    // Send a regular message (no AI trigger)
     const sendMessage = useCallback(
         async (content: string, senderId: string) => {
             if (!content.trim()) return;
@@ -92,19 +112,26 @@ export function useChat({ negotiationId }: UseChatOptions) {
 
                 if (msgError) throw msgError;
 
-                // Trigger AI response via API
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        negotiationId,
-                        message: content.trim(),
-                        senderId,
-                    }),
-                });
+                // Only trigger AI if message contains @sudo or similar
+                if (shouldTriggerAI(content)) {
+                    setAiLoading(true);
+                    try {
+                        const response = await fetch('/api/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                negotiationId,
+                                message: content.trim(),
+                                senderId,
+                            }),
+                        });
 
-                if (!response.ok) {
-                    throw new Error('Failed to get AI response');
+                        if (!response.ok) {
+                            console.error('Failed to get AI response');
+                        }
+                    } finally {
+                        setAiLoading(false);
+                    }
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -115,5 +142,47 @@ export function useChat({ negotiationId }: UseChatOptions) {
         [negotiationId]
     );
 
-    return { messages, loading, sending, sendMessage };
+    // Explicitly ask Sudo for input (button click)
+    const askSudo = useCallback(
+        async (senderId: string, context?: string) => {
+            setAiLoading(true);
+            const supabase = createClient();
+
+            try {
+                // Optionally add a system message showing user asked for help
+                if (context) {
+                    await supabase.from('messages').insert({
+                        negotiation_id: negotiationId,
+                        sender_id: senderId,
+                        sender_type: 'user',
+                        content: `@Sudo ${context}`,
+                        metadata: { isAskSudo: true },
+                    });
+                }
+
+                // Trigger AI response
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        negotiationId,
+                        message: context || 'Please provide your input on our discussion so far.',
+                        senderId,
+                        explicitAsk: true,
+                    }),
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to get AI response');
+                }
+            } catch (error) {
+                console.error('Error asking Sudo:', error);
+            } finally {
+                setAiLoading(false);
+            }
+        },
+        [negotiationId]
+    );
+
+    return { messages, loading, sending, aiLoading, sendMessage, askSudo };
 }

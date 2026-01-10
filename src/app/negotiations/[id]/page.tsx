@@ -18,7 +18,8 @@ import {
     User,
     CheckCircle2,
     FileText,
-    X
+    X,
+    MessageCircle
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -28,13 +29,14 @@ export default function NegotiationChatPage() {
     const { user, profile } = useAuth();
     const negotiationId = params.id as string;
 
-    const { messages, loading: messagesLoading, sending, sendMessage } = useChat({ negotiationId });
+    const { messages, loading: messagesLoading, sending, aiLoading, sendMessage, askSudo } = useChat({ negotiationId });
 
     const [negotiation, setNegotiation] = useState<Negotiation | null>(null);
     const [participants, setParticipants] = useState<Participant[]>([]);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [showFinalizeModal, setShowFinalizeModal] = useState(false);
+    const [finalizing, setFinalizing] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -44,9 +46,9 @@ export default function NegotiationChatPage() {
             const { data: neg, error } = await supabase
                 .from('negotiations')
                 .select(`
-          *,
-          template:templates(*)
-        `)
+                    *,
+                    template:templates(*)
+                `)
                 .eq('id', negotiationId)
                 .single();
 
@@ -62,9 +64,9 @@ export default function NegotiationChatPage() {
             const { data: parts } = await supabase
                 .from('participants')
                 .select(`
-          *,
-          profile:profiles(*)
-        `)
+                    *,
+                    profile:profiles(*)
+                `)
                 .eq('negotiation_id', negotiationId);
 
             setParticipants(parts || []);
@@ -90,38 +92,43 @@ export default function NegotiationChatPage() {
         await sendMessage(text, user.id);
     };
 
-    const handleFinalize = async () => {
-        if (!negotiation) return;
+    const handleAskSudo = async () => {
+        if (!user) return;
+        await askSudo(user.id, 'What are your thoughts on our discussion so far? Any suggestions?');
+    };
 
+    const handleFinalize = async () => {
+        if (!negotiation || !user) return;
+
+        setFinalizing(true);
         const supabase = createClient();
 
-        // Update negotiation status
-        await supabase
-            .from('negotiations')
-            .update({ status: 'completed' })
-            .eq('id', negotiationId);
+        try {
+            // Call API to generate LLM contract
+            const response = await fetch('/api/contract/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ negotiationId }),
+            });
 
-        // Create contract
-        await supabase.from('contracts').insert({
-            negotiation_id: negotiationId,
-            title: negotiation.title,
-            final_content: {
-                templateName: (negotiation as any).template?.name || 'Custom Contract',
-                parties: participants.map(p => ({
-                    name: (p as any).profile?.full_name || p.email,
-                    email: p.email,
-                    role: p.role
-                })),
-                terms: negotiation.contract_data?.agreedTerms || {},
-                sections: negotiation.contract_data?.sections || {},
-                generatedAt: new Date().toISOString()
-            },
-            pdf_path: null,
-            signed_by: []
-        });
+            if (!response.ok) {
+                throw new Error('Failed to generate contract');
+            }
 
-        setShowFinalizeModal(false);
-        router.push('/contracts');
+            const { contractId } = await response.json();
+
+            // Update negotiation status
+            await supabase
+                .from('negotiations')
+                .update({ status: 'completed' })
+                .eq('id', negotiationId);
+
+            setShowFinalizeModal(false);
+            router.push(`/contracts/${contractId}`);
+        } catch (error) {
+            console.error('Error finalizing:', error);
+            setFinalizing(false);
+        }
     };
 
     if (loading) {
@@ -174,10 +181,20 @@ export default function NegotiationChatPage() {
                                 <span className="text-xs text-white/40">({p.role})</span>
                             </div>
                         ))}
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20">
-                            <Sparkles className="w-3 h-3 text-primary-400" />
-                            <span className="text-sm text-primary-400">Sudo (AI Mediator)</span>
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${aiLoading ? 'bg-primary-500/20 border-primary-500/40 animate-pulse' : 'bg-primary-500/10 border-primary-500/20'}`}>
+                            <Sparkles className={`w-3 h-3 text-primary-400 ${aiLoading ? 'animate-spin' : ''}`} />
+                            <span className="text-sm text-primary-400">
+                                {aiLoading ? 'Sudo is thinking...' : 'Sudo (AI Mediator)'}
+                            </span>
                         </div>
+                    </div>
+
+                    {/* Tip Banner */}
+                    <div className="mb-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm flex items-center gap-2">
+                        <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                        <span>
+                            <strong>Tip:</strong> Type <code className="bg-blue-500/20 px-1 rounded">@Sudo</code> in your message to get AI input, or click "Ask Sudo" below.
+                        </span>
                     </div>
 
                     {/* Messages */}
@@ -200,6 +217,24 @@ export default function NegotiationChatPage() {
                                     />
                                 ))
                             )}
+                            {aiLoading && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="flex gap-3"
+                                >
+                                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary-500 to-accent-500">
+                                        <Sparkles className="w-4 h-4 text-white animate-pulse" />
+                                    </div>
+                                    <div className="px-4 py-2.5 rounded-2xl bg-primary-500/10 border border-primary-500/20">
+                                        <div className="flex gap-1">
+                                            <span className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <span className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <span className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
                             <div ref={messagesEndRef} />
                         </CardContent>
 
@@ -210,10 +245,19 @@ export default function NegotiationChatPage() {
                                     <Input
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
-                                        placeholder="Type your message..."
+                                        placeholder="Type your message... (use @Sudo to ask AI)"
                                         className="flex-1"
                                         disabled={sending}
                                     />
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        onClick={handleAskSudo}
+                                        disabled={aiLoading || sending}
+                                        title="Ask Sudo for input"
+                                    >
+                                        <Sparkles className="w-4 h-4" />
+                                    </Button>
                                     <Button type="submit" loading={sending} disabled={!message.trim()}>
                                         <Send className="w-4 h-4" />
                                     </Button>
@@ -255,19 +299,19 @@ export default function NegotiationChatPage() {
                                         <span className="font-semibold text-white">{negotiation?.title}</span>
                                     </div>
                                     <p className="text-sm text-white/60">
-                                        This will mark the negotiation as complete and generate a contract document.
+                                        Sudo will generate a complete legal contract based on your discussion.
                                     </p>
                                 </div>
                                 <p className="text-sm text-white/60">
-                                    Are you sure you want to finalize this contract? This action cannot be undone.
+                                    The AI will draft professional legal language using your negotiated terms. You can download the final document after generation.
                                 </p>
                                 <div className="flex gap-3">
-                                    <Button variant="secondary" onClick={() => setShowFinalizeModal(false)} className="flex-1">
+                                    <Button variant="secondary" onClick={() => setShowFinalizeModal(false)} className="flex-1" disabled={finalizing}>
                                         Cancel
                                     </Button>
-                                    <Button onClick={handleFinalize} className="flex-1">
-                                        <CheckCircle2 className="w-4 h-4" />
-                                        Finalize
+                                    <Button onClick={handleFinalize} className="flex-1" loading={finalizing}>
+                                        <Sparkles className="w-4 h-4" />
+                                        Generate Contract
                                     </Button>
                                 </div>
                             </CardContent>
@@ -290,10 +334,10 @@ function MessageBubble({ message, isOwn }: { message: Message; isOwn: boolean })
         >
             {/* Avatar */}
             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isAI
-                    ? 'bg-gradient-to-br from-primary-500 to-accent-500'
-                    : isOwn
-                        ? 'bg-primary-500'
-                        : 'bg-white/10'
+                ? 'bg-gradient-to-br from-primary-500 to-accent-500'
+                : isOwn
+                    ? 'bg-primary-500'
+                    : 'bg-white/10'
                 }`}>
                 {isAI ? (
                     <Sparkles className="w-4 h-4 text-white" />
@@ -313,10 +357,10 @@ function MessageBubble({ message, isOwn }: { message: Message; isOwn: boolean })
                     </span>
                 </div>
                 <div className={`inline-block px-4 py-2.5 rounded-2xl ${isAI
-                        ? 'bg-primary-500/10 border border-primary-500/20 text-white'
-                        : isOwn
-                            ? 'bg-primary-500 text-white'
-                            : 'bg-white/10 text-white'
+                    ? 'bg-primary-500/10 border border-primary-500/20 text-white'
+                    : isOwn
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-white/10 text-white'
                     }`}>
                     <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                 </div>
