@@ -6,72 +6,134 @@ export const openrouter = new OpenAI({
     apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-// System prompt for the AI mediator
-const MEDIATOR_SYSTEM_PROMPT = `You are Sudo, an AI contract negotiation mediator. Your role is to:
+// Enhanced system prompt for group chat mediation
+const MEDIATOR_SYSTEM_PROMPT = `You are **Sudo**, an AI contract negotiation mediator facilitating a real-time group chat between two parties. You are NOT chatting with one person - this is a **three-way conversation** between you and two human participants negotiating a contract together.
 
-1. **Facilitate Discussion**: Help both parties communicate clearly and understand each other's positions.
+## Your Role
+You are a neutral, professional mediator helping both parties reach a fair agreement. Think of yourself as a skilled negotiator who ensures both sides are heard and helps find common ground.
 
-2. **Explain Legal Terms**: When contract terms come up, explain them in plain, accessible language.
+## Chat Format
+Messages will be sent to you in a structured JSON format:
+\`\`\`
+{
+  "conversation": [
+    {"from": "Party Name", "role": "initiator|party", "message": "..."},
+    {"from": "Sudo", "role": "mediator", "message": "..."},
+    ...
+  ],
+  "latest_message": {"from": "Party Name", "role": "...", "message": "..."},
+  "contract": {...}
+}
+\`\`\`
 
-3. **Suggest Compromises**: When parties disagree, propose fair middle-ground solutions.
+The "initiator" is the party who started the negotiation. The "party" is the invited counterparty.
 
-4. **Track Progress**: Keep track of what's been agreed upon and what's still being negotiated.
+## Your Responsibilities
+1. **Address Both Parties**: When responding, consider both participants. Use their names when appropriate to make the conversation feel personal.
 
-5. **Draft Language**: Help write clear, professional contract language for agreed terms.
+2. **Facilitate Discussion**: Help both parties express their needs clearly. When one party speaks, consider how it affects the other.
 
-Guidelines:
-- Be neutral and fair to both parties
-- Keep responses concise but helpful (2-4 sentences typically)
-- Ask clarifying questions when needed
-- Summarize agreements when terms are settled
-- Flag any concerning or unclear terms
-- Use a friendly but professional tone
+3. **Propose Solutions**: When there's disagreement, suggest compromises. Example: "I hear that Alex wants X and Jordan prefers Y. What if we considered Z as a middle ground?"
 
-Current contract context will be provided. Focus on helping reach a fair agreement efficiently.`;
+4. **Explain Terms**: If contract terms are mentioned, explain them in plain language so both parties understand.
+
+5. **Track Agreements**: When parties agree on something, acknowledge it clearly: "Great, you've both agreed on [term]. Let me note that."
+
+6. **Drive Progress**: Don't just respond - guide the negotiation forward. Ask relevant questions, suggest next topics to discuss.
+
+7. **Stay Neutral**: Never favor one party over another. Be fair and balanced.
+
+## Response Guidelines
+- Keep responses conversational but professional (2-5 sentences typically)
+- Address parties by name when it makes sense
+- Use clear, accessible language (avoid legal jargon unless explaining it)
+- Be warm and encouraging while remaining professional
+- When parties seem to agree, confirm and move to the next topic
+- If discussion stalls, suggest a new angle or topic
+
+## Contract Context
+You'll receive information about:
+- The contract template being negotiated
+- Both parties and their roles
+- Terms already agreed upon
+- Terms still under discussion
+
+Use this context to give informed, relevant responses.
+
+Remember: You're facilitating a LIVE group conversation. Both humans can see everything you say. Make them feel heard and guide them toward a successful agreement.`;
 
 export interface ChatMessage {
     role: 'system' | 'user' | 'assistant';
     content: string;
 }
 
+export interface MessageWithSender {
+    senderName: string;
+    senderRole: string; // 'initiator' | 'party' | 'ai'
+    content: string;
+    timestamp?: string;
+}
+
 export interface ContractContext {
     templateName: string;
+    title: string;
     agreedTerms: Record<string, string>;
     disputedTerms: Record<string, { partyA: string; partyB: string }>;
-    participants: { name: string; role: string }[];
+    participants: { name: string; email: string; role: string }[];
 }
 
 export async function getAIResponse(
-    messages: ChatMessage[],
+    messages: MessageWithSender[],
     contractContext: ContractContext,
-    senderName: string
+    latestMessage: MessageWithSender
 ): Promise<string> {
-    const contextMessage = `
-Contract: ${contractContext.templateName}
-Participants: ${contractContext.participants.map(p => `${p.name} (${p.role})`).join(', ')}
-Agreed Terms: ${Object.keys(contractContext.agreedTerms).length > 0
-            ? Object.entries(contractContext.agreedTerms).map(([k, v]) => `${k}: ${v}`).join('; ')
-            : 'None yet'}
-Open Items: ${Object.keys(contractContext.disputedTerms).length > 0
-            ? Object.keys(contractContext.disputedTerms).join(', ')
-            : 'None'}
+    // Build structured conversation history
+    const conversationHistory = messages.map(m => ({
+        from: m.senderRole === 'ai' ? 'Sudo' : m.senderName,
+        role: m.senderRole === 'ai' ? 'mediator' : m.senderRole,
+        message: m.content
+    }));
 
-Message from ${senderName}:`;
+    // Build the structured prompt
+    const structuredPrompt = JSON.stringify({
+        conversation: conversationHistory,
+        latest_message: {
+            from: latestMessage.senderName,
+            role: latestMessage.senderRole,
+            message: latestMessage.content
+        },
+        contract: {
+            type: contractContext.templateName,
+            title: contractContext.title,
+            parties: contractContext.participants.map(p => ({
+                name: p.name,
+                email: p.email,
+                role: p.role
+            })),
+            agreed_terms: Object.keys(contractContext.agreedTerms).length > 0
+                ? contractContext.agreedTerms
+                : null,
+            open_items: Object.keys(contractContext.disputedTerms).length > 0
+                ? contractContext.disputedTerms
+                : null
+        }
+    }, null, 2);
 
-    const fullMessages: ChatMessage[] = [
-        { role: 'system', content: MEDIATOR_SYSTEM_PROMPT },
-        ...messages.slice(-10).map(m => ({
-            ...m,
-            content: m.role === 'user' ? `${contextMessage}\n${m.content}` : m.content
-        })),
-    ];
+    const userPrompt = `Here is the current conversation state and the latest message to respond to:
+
+${structuredPrompt}
+
+Respond as Sudo the mediator. Address the latest message while keeping the broader negotiation context in mind. Remember both parties can see your response.`;
 
     try {
         const response = await openrouter.chat.completions.create({
-            model: 'anthropic/claude-3.5-sonnet', // Using Claude 3.5 Sonnet via OpenRouter
-            messages: fullMessages,
-            max_tokens: 500,
-            temperature: 0.7,
+            model: 'anthropic/claude-3.5-sonnet',
+            messages: [
+                { role: 'system', content: MEDIATOR_SYSTEM_PROMPT },
+                { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 600,
+            temperature: 0.75,
         });
 
         return response.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
@@ -81,27 +143,70 @@ Message from ${senderName}:`;
     }
 }
 
-// Function to generate a contract summary
-export async function generateContractSummary(
-    contractContext: ContractContext
-): Promise<string> {
-    const prompt = `Based on the following negotiation context, generate a brief summary of the current contract state:
+// Generate welcome message for a new negotiation
+export async function generateWelcomeMessage(contractContext: ContractContext): Promise<string> {
+    const parties = contractContext.participants;
+    const initiator = parties.find(p => p.role === 'initiator');
+    const otherParty = parties.find(p => p.role === 'party');
+
+    const prompt = `Generate a warm, professional welcome message for a new contract negotiation.
 
 Contract Type: ${contractContext.templateName}
-Participants: ${contractContext.participants.map(p => `${p.name} (${p.role})`).join(', ')}
+Title: ${contractContext.title}
+Initiator: ${initiator?.name || 'Party 1'}
+Other Party: ${otherParty?.name || otherParty?.email || 'Party 2'}
+
+The message should:
+1. Greet both parties by name (or email if name not available)
+2. Briefly explain your role as Sudo the mediator
+3. Mention the contract type being negotiated
+4. Invite them to begin discussing their needs/expectations
+5. Be warm, encouraging, and professional
+
+Keep it to 3-4 sentences.`;
+
+    try {
+        const response = await openrouter.chat.completions.create({
+            model: 'anthropic/claude-3.5-sonnet',
+            messages: [
+                { role: 'system', content: 'You are Sudo, a friendly AI contract negotiation mediator. Generate a welcoming first message for a negotiation chat.' },
+                { role: 'user', content: prompt }
+            ],
+            max_tokens: 200,
+            temperature: 0.8,
+        });
+
+        return response.choices[0]?.message?.content || getDefaultWelcomeMessage(contractContext);
+    } catch {
+        return getDefaultWelcomeMessage(contractContext);
+    }
+}
+
+function getDefaultWelcomeMessage(ctx: ContractContext): string {
+    const initiator = ctx.participants.find(p => p.role === 'initiator');
+    const party = ctx.participants.find(p => p.role === 'party');
+    return `Welcome to your ${ctx.templateName} negotiation! I'm Sudo, your AI mediator. I'll help ${initiator?.name || 'you'} and ${party?.name || party?.email || 'your counterparty'} discuss terms and reach a fair agreement. Let's start by having each of you share your main goals for this contract.`;
+}
+
+// Function to generate a contract summary
+export async function generateContractSummary(contractContext: ContractContext): Promise<string> {
+    const prompt = `Summarize the current state of this contract negotiation:
+
+Contract: ${contractContext.templateName} - "${contractContext.title}"
+Parties: ${contractContext.participants.map(p => `${p.name} (${p.role})`).join(', ')}
 
 Agreed Terms:
-${Object.entries(contractContext.agreedTerms).map(([k, v]) => `- ${k}: ${v}`).join('\n')}
+${Object.entries(contractContext.agreedTerms).map(([k, v]) => `- ${k}: ${v}`).join('\n') || 'None yet'}
 
-Items Still Under Discussion:
-${Object.entries(contractContext.disputedTerms).map(([k, v]) => `- ${k}: Party A wants "${v.partyA}", Party B wants "${v.partyB}"`).join('\n')}
+Items Under Discussion:
+${Object.entries(contractContext.disputedTerms).map(([k, v]) => `- ${k}: One party wants "${v.partyA}", the other wants "${v.partyB}"`).join('\n') || 'None'}
 
-Provide a 2-3 sentence summary of the negotiation status.`;
+Provide a 2-3 sentence summary of where the negotiation stands.`;
 
     const response = await openrouter.chat.completions.create({
         model: 'anthropic/claude-3.5-sonnet',
         messages: [
-            { role: 'system', content: 'You are a contract summarization assistant. Be concise and clear.' },
+            { role: 'system', content: 'You are a contract summarization assistant. Be concise and neutral.' },
             { role: 'user', content: prompt }
         ],
         max_tokens: 200,

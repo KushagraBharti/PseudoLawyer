@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getAIResponse, ChatMessage, ContractContext } from '@/lib/openrouter';
+import { getAIResponse, MessageWithSender, ContractContext } from '@/lib/openrouter';
 
 export async function POST(request: NextRequest) {
     try {
@@ -19,9 +19,9 @@ export async function POST(request: NextRequest) {
         const { data: negotiation, error: negError } = await supabase
             .from('negotiations')
             .select(`
-        *,
-        template:templates(name)
-      `)
+                *,
+                template:templates(name)
+            `)
             .eq('id', negotiationId)
             .single();
 
@@ -32,60 +32,92 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Get participants
+        // Get participants with their profiles
         const { data: participants } = await supabase
             .from('participants')
             .select(`
-        *,
-        profile:profiles(full_name, email)
-      `)
+                *,
+                profile:profiles(id, full_name, email)
+            `)
             .eq('negotiation_id', negotiationId);
 
         // Get sender info
         const { data: senderProfile } = await supabase
             .from('profiles')
-            .select('full_name')
+            .select('id, full_name, email')
             .eq('id', senderId)
             .single();
 
-        // Get recent messages for context
+        // Find sender's role in this negotiation
+        const senderParticipant = participants?.find(
+            (p: any) => p.user_id === senderId || p.profile?.id === senderId
+        );
+        const senderRole = senderParticipant?.role || 'party';
+
+        // Get recent messages with sender info
         const { data: recentMessages } = await supabase
             .from('messages')
-            .select('*')
+            .select(`
+                *,
+                sender:profiles(id, full_name, email)
+            `)
             .eq('negotiation_id', negotiationId)
-            .order('created_at', { ascending: false })
-            .limit(10);
+            .order('created_at', { ascending: true })
+            .limit(20);
 
-        // Prepare context for AI
+        // Build participant list for context
+        const participantList = (participants || []).map((p: any) => ({
+            name: p.profile?.full_name || p.email?.split('@')[0] || 'Unknown',
+            email: p.profile?.email || p.email,
+            role: p.role,
+        }));
+
+        // Prepare contract context
         const contractContext: ContractContext = {
             templateName: (negotiation as any).template?.name || 'Custom Contract',
+            title: negotiation.title,
             agreedTerms: negotiation.contract_data?.agreedTerms || {},
             disputedTerms: negotiation.contract_data?.disputedTerms || {},
-            participants: (participants || []).map((p: any) => ({
-                name: p.profile?.full_name || p.email,
-                role: p.role,
-            })),
+            participants: participantList,
         };
 
-        // Convert messages to chat format
-        const chatMessages: ChatMessage[] = (recentMessages || [])
-            .reverse()
-            .map((msg) => ({
-                role: msg.sender_type === 'ai' ? 'assistant' as const : 'user' as const,
-                content: msg.content,
-            }));
+        // Convert messages to structured format with sender info
+        const messageHistory: MessageWithSender[] = (recentMessages || []).map((msg: any) => {
+            let senderName = 'Unknown';
+            let msgSenderRole = 'party';
 
-        // Add the new message
-        chatMessages.push({
-            role: 'user',
-            content: message,
+            if (msg.sender_type === 'ai') {
+                senderName = 'Sudo';
+                msgSenderRole = 'ai';
+            } else if (msg.sender) {
+                senderName = msg.sender.full_name || msg.sender.email?.split('@')[0] || 'Unknown';
+                // Find this sender's role
+                const msgParticipant = participants?.find(
+                    (p: any) => p.user_id === msg.sender_id || p.profile?.id === msg.sender_id
+                );
+                msgSenderRole = msgParticipant?.role || 'party';
+            }
+
+            return {
+                senderName,
+                senderRole: msgSenderRole,
+                content: msg.content,
+                timestamp: msg.created_at,
+            };
         });
 
-        // Get AI response
+        // Prepare latest message
+        const latestMessage: MessageWithSender = {
+            senderName: senderProfile?.full_name || senderProfile?.email?.split('@')[0] || 'User',
+            senderRole: senderRole,
+            content: message,
+        };
+
+        // Get AI response with full context
         const aiResponse = await getAIResponse(
-            chatMessages,
+            messageHistory,
             contractContext,
-            senderProfile?.full_name || 'User'
+            latestMessage
         );
 
         // Save AI message to database
@@ -94,7 +126,10 @@ export async function POST(request: NextRequest) {
             sender_id: null,
             sender_type: 'ai',
             content: aiResponse,
-            metadata: {},
+            metadata: {
+                respondingTo: senderId,
+                participantCount: participants?.length || 0,
+            },
         });
 
         if (insertError) {
