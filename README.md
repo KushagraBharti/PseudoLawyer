@@ -5,10 +5,8 @@
 
 PseudoLawyer is a modern web application that transforms the complex, often adversarial process of contract negotiation into a streamlined, collaborative experience. It enables two parties to negotiate real-time with the assistance of **Sudo**, an intelligent AI mediator that helps resolve disputes, draft compromises, and generate professional legal documents.
 
-<p align="center">
-  <video src="Introducing Pseudolawyer_ Streamlining NDA Negotiations with AI.mp4" width="80%" controls></video>
-</p>
-
+![PseudoLawyer Demo](pseudolawyer.png)
+[Video Demo](https://youtu.be/JdlF04etSWU)
 
 ## ✨ Key Features
 
