@@ -1,5 +1,7 @@
 # ⚖️ PseudoLawyer
 
+Forked from unfinished group project, but I finished it on my own.
+
 > **AI-Powered Contract Negotiation Platform**
 > *Negotiate smarter, faster, and fairer with Sudo, your AI Mediator.*
 
