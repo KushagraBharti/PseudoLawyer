@@ -1,0 +1,13 @@
+src\lib\openrouter.ts:4:export const openrouter = new OpenAI({
+src\lib\openrouter.ts:5:    baseURL: 'https://openrouter.ai/api/v1',
+src\lib\openrouter.ts:6:    apiKey: process.env.OPENROUTER_API_KEY,
+src\lib\openrouter.ts:129:        const response = await openrouter.chat.completions.create({
+src\lib\openrouter.ts:130:            model: 'anthropic/claude-3.5-sonnet',
+src\lib\openrouter.ts:169:        const response = await openrouter.chat.completions.create({
+src\lib\openrouter.ts:170:            model: 'anthropic/claude-3.5-sonnet',
+src\lib\openrouter.ts:206:    const response = await openrouter.chat.completions.create({
+src\lib\openrouter.ts:207:        model: 'anthropic/claude-3.5-sonnet',
+src\app\api\chat\route.ts:3:import { getAIResponse, MessageWithSender, ContractContext } from '@/lib/openrouter';
+src\app\api\contract\generate\route.ts:3:import { openrouter } from '@/lib/openrouter';
+src\app\api\contract\generate\route.ts:107:        const response = await openrouter.chat.completions.create({
+src\app\api\contract\generate\route.ts:108:            model: 'anthropic/claude-3.5-sonnet',

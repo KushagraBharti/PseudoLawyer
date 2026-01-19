@@ -1,0 +1,13 @@
+{
+  "protected_paths_count": 3,
+  "protected_paths": [
+    "'/dashboard'",
+    "'/negotiations'",
+    "'/contracts'"
+  ],
+  "auth_paths_count": 2,
+  "auth_paths": [
+    "'/login'",
+    "'/register'"
+  ]
+}

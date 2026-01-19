@@ -1,0 +1,5 @@
+src\app\api\contract\generate\route.ts:110:                { role: 'system', content: CONTRACT_GENERATION_PROMPT },
+src\lib\openrouter.ts:66:    role: 'system' | 'user' | 'assistant';
+src\lib\openrouter.ts:132:                { role: 'system', content: MEDIATOR_SYSTEM_PROMPT },
+src\lib\openrouter.ts:172:                { role: 'system', content: 'You are Sudo, a friendly AI contract negotiation mediator. Generate a welcoming first message for a negotiation chat.' },
+src\lib\openrouter.ts:209:            { role: 'system', content: 'You are a contract summarization assistant. Be concise and neutral.' },

@@ -1,0 +1,2 @@
+src\app\api\contract\generate\route.ts:62:            .limit(50);
+src\app\api\chat\route.ts:66:            .limit(20);

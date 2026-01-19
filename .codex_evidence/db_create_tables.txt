@@ -1,0 +1,6 @@
+5:CREATE TABLE IF NOT EXISTS public.profiles (
+14:CREATE TABLE IF NOT EXISTS public.templates (
+24:CREATE TABLE IF NOT EXISTS public.negotiations (
+36:CREATE TABLE IF NOT EXISTS public.participants (
+48:CREATE TABLE IF NOT EXISTS public.messages (
+59:CREATE TABLE IF NOT EXISTS public.contracts (

@@ -1,0 +1,3 @@
+13:function shouldTriggerAI(content: string): boolean {
+17:    const triggers = [
+116:                if (shouldTriggerAI(content)) {

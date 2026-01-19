@@ -1,0 +1,24 @@
+
+Name                                                                Mode  Length   LastWriteTime
+----                                                                ----  ------   -------------
+.codex_evidence                                                     d----          1/18/2026 11:36:17 AM
+.git                                                                la-h-          1/18/2026 11:36:21 AM
+.next                                                               la---          1/9/2026 8:39:28 PM
+node_modules                                                        la---          1/9/2026 7:20:16 PM
+src                                                                 lar--          1/9/2026 8:53:44 PM
+supabase                                                            lar--          1/9/2026 8:53:48 PM
+.env.example                                                        la--- 384      1/9/2026 7:18:32 PM
+.env.local                                                          la--- 296      1/9/2026 7:12:11 PM
+.gitignore                                                          la--- 340      1/9/2026 7:44:15 PM
+Introducing Pseudolawyer_ Streamlining NDA Negotiations with AI.mp4 la--- 17743949 1/9/2026 8:28:14 PM
+next-env.d.ts                                                       la--- 268      1/9/2026 7:13:29 PM
+next.config.ts                                                      la--- 200      1/9/2026 6:55:18 PM
+package-lock.json                                                   la--- 257750   1/9/2026 7:20:17 PM
+package.json                                                        la--- 885      1/9/2026 7:20:17 PM
+postcss.config.mjs                                                  la--- 178      1/9/2026 6:55:23 PM
+pseudolawyer.png                                                    la--- 175034   1/9/2026 8:39:49 PM
+README.md                                                           la--- 6141     1/9/2026 8:43:12 PM
+tailwind.config.js                                                  la--- 2015     1/9/2026 6:55:21 PM
+tsconfig.json                                                       la--- 870      1/9/2026 6:55:07 PM
+
+

@@ -1,0 +1,4 @@
+src\lib\openrouter.ts:5:    baseURL: 'https://openrouter.ai/api/v1',
+src\hooks\use-chat.ts:119:                        const response = await fetch('/api/chat', {
+src\hooks\use-chat.ts:164:                const response = await fetch('/api/chat', {
+src\app\negotiations\[id]\page.tsx:108:            const response = await fetch('/api/contract/generate', {

@@ -1,0 +1,15 @@
+
+Days              : 0
+Hours             : 0
+Minutes           : 0
+Seconds           : 25
+Milliseconds      : 855
+Ticks             : 258557346
+TotalDays         : 0.0002992561875
+TotalHours        : 0.0071821485
+TotalMinutes      : 0.43092891
+TotalSeconds      : 25.8557346
+TotalMilliseconds : 25855.7346
+
+
+exitcode=1

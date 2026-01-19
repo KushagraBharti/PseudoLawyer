@@ -1,0 +1,9 @@
+/
+/contracts
+/contracts/[id]
+/dashboard
+/login
+/negotiations
+/negotiations/[id]
+/negotiations/new
+/register

@@ -1,0 +1,74 @@
+src\middleware.ts:1:import { createServerClient, type CookieOptions } from '@supabase/ssr';
+src\middleware.ts:5:    let supabaseResponse = NextResponse.next({
+src\middleware.ts:9:    const supabase = createServerClient(
+src\middleware.ts:21:                    supabaseResponse = NextResponse.next({
+src\middleware.ts:25:                        supabaseResponse.cookies.set(name, value, options)
+src\middleware.ts:35:        const { data } = await supabase.auth.getUser();
+src\middleware.ts:66:    return supabaseResponse;
+src\app\register\page.tsx:6:import { createClient } from '@/lib/supabase/client';
+src\app\register\page.tsx:33:        const supabase = createClient();
+src\app\register\page.tsx:35:        const { error: authError } = await supabase.auth.signUp({
+src\app\api\chat\route.ts:2:import { createClient } from '@/lib/supabase/server';
+src\app\api\chat\route.ts:16:        const supabase = await createClient();
+src\app\api\chat\route.ts:19:        const { data: negotiation, error: negError } = await supabase
+src\app\api\chat\route.ts:36:        const { data: participants } = await supabase
+src\app\api\chat\route.ts:45:        const { data: senderProfile } = await supabase
+src\app\api\chat\route.ts:58:        const { data: recentMessages } = await supabase
+src\app\api\chat\route.ts:124:        const { error: insertError } = await supabase.from('messages').insert({
+src\lib\supabase\client.ts:1:import { createBrowserClient } from '@supabase/ssr';
+src\lib\supabase\client.ts:4:    return createBrowserClient(
+src\lib\supabase\server.ts:1:import { createServerClient, type CookieOptions } from '@supabase/ssr';
+src\lib\supabase\server.ts:7:    return createServerClient(
+src\app\contracts\page.tsx:6:import { createClient } from '@/lib/supabase/client';
+src\app\contracts\page.tsx:29:            const supabase = createClient();
+src\app\contracts\page.tsx:31:            const { data, error } = await supabase
+src\app\negotiations\[id]\page.tsx:6:import { createClient } from '@/lib/supabase/client';
+src\app\negotiations\[id]\page.tsx:44:            const supabase = createClient();
+src\app\negotiations\[id]\page.tsx:46:            const { data: neg, error } = await supabase
+src\app\negotiations\[id]\page.tsx:64:            const { data: parts } = await supabase
+src\app\negotiations\[id]\page.tsx:104:        const supabase = createClient();
+src\app\negotiations\[id]\page.tsx:121:            await supabase
+src\app\contracts\[id]\page.tsx:6:import { createClient } from '@/lib/supabase/client';
+src\app\contracts\[id]\page.tsx:35:            const supabase = createClient();
+src\app\contracts\[id]\page.tsx:37:            const { data, error } = await supabase
+src\app\login\page.tsx:6:import { createClient } from '@/lib/supabase/client';
+src\app\login\page.tsx:27:        const supabase = createClient();
+src\app\login\page.tsx:29:        const { error: authError } = await supabase.auth.signInWithPassword({
+src\app\negotiations\page.tsx:6:import { createClient } from '@/lib/supabase/client';
+src\app\negotiations\page.tsx:31:            const supabase = createClient();
+src\app\negotiations\page.tsx:33:            const { data, error } = await supabase
+src\app\api\contract\generate\route.ts:2:import { createClient } from '@/lib/supabase/server';
+src\app\api\contract\generate\route.ts:28:        const supabase = await createClient();
+src\app\api\contract\generate\route.ts:31:        const { data: negotiation, error: negError } = await supabase
+src\app\api\contract\generate\route.ts:48:        const { data: participants } = await supabase
+src\app\api\contract\generate\route.ts:57:        const { data: messages } = await supabase
+src\app\api\contract\generate\route.ts:120:        const { data: contract, error: contractError } = await supabase
+src\hooks\use-auth.ts:4:import { createClient } from '@/lib/supabase/client';
+src\hooks\use-auth.ts:5:import { User } from '@supabase/supabase-js';
+src\hooks\use-auth.ts:22:        const supabase = createClient();
+src\hooks\use-auth.ts:26:            const { data: { user } } = await supabase.auth.getUser();
+src\hooks\use-auth.ts:29:                const { data: profile } = await supabase
+src\hooks\use-auth.ts:44:        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+src\hooks\use-auth.ts:47:                    const { data: profile } = await supabase
+src\hooks\use-auth.ts:64:        const supabase = createClient();
+src\hooks\use-auth.ts:65:        await supabase.auth.signOut();
+src\hooks\use-chat.ts:4:import { createClient } from '@/lib/supabase/client';
+src\hooks\use-chat.ts:6:import { RealtimeChannel } from '@supabase/supabase-js';
+src\hooks\use-chat.ts:37:        const supabase = createClient();
+src\hooks\use-chat.ts:42:            const { data, error } = await supabase
+src\hooks\use-chat.ts:62:        channel = supabase
+src\hooks\use-chat.ts:74:                    const { data } = await supabase
+src\hooks\use-chat.ts:91:            supabase.removeChannel(channel);
+src\hooks\use-chat.ts:101:            const supabase = createClient();
+src\hooks\use-chat.ts:105:                const { error: msgError } = await supabase.from('messages').insert({
+src\hooks\use-chat.ts:149:            const supabase = createClient();
+src\hooks\use-chat.ts:154:                    await supabase.from('messages').insert({
+src\app\negotiations\new\page.tsx:6:import { createClient } from '@/lib/supabase/client';
+src\app\negotiations\new\page.tsx:35:            const supabase = createClient();
+src\app\negotiations\new\page.tsx:37:            const { data, error } = await supabase
+src\app\negotiations\new\page.tsx:59:        const supabase = createClient();
+src\app\negotiations\new\page.tsx:62:        const { data: negotiation, error: negError } = await supabase
+src\app\negotiations\new\page.tsx:86:        await supabase.from('participants').insert({
+src\app\negotiations\new\page.tsx:98:            const { data: counterpartyProfile } = await supabase
+src\app\negotiations\new\page.tsx:104:            await supabase.from('participants').insert({
+src\app\negotiations\new\page.tsx:115:        await supabase.from('messages').insert({

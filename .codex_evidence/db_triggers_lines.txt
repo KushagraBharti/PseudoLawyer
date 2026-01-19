@@ -1,0 +1,3 @@
+169:CREATE TRIGGER on_auth_user_created
+183:CREATE TRIGGER update_profiles_updated_at
+187:CREATE TRIGGER update_negotiations_updated_at

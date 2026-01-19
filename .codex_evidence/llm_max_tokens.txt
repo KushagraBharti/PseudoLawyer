@@ -1,0 +1,4 @@
+src\lib\openrouter.ts:135:            max_tokens: 600,
+src\lib\openrouter.ts:175:            max_tokens: 200,
+src\lib\openrouter.ts:212:        max_tokens: 200,
+src\app\api\contract\generate\route.ts:113:            max_tokens: 4000,

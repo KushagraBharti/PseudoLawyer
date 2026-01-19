@@ -1,0 +1,2 @@
+4:INSERT INTO public.templates (name, description, category, content) VALUES (
+70:INSERT INTO public.templates (name, description, category, content) VALUES (

@@ -1,0 +1,4 @@
+148:CREATE INDEX IF NOT EXISTS idx_participants_negotiation ON public.participants(negotiation_id);
+149:CREATE INDEX IF NOT EXISTS idx_participants_user ON public.participants(user_id);
+150:CREATE INDEX IF NOT EXISTS idx_messages_negotiation ON public.messages(negotiation_id);
+151:CREATE INDEX IF NOT EXISTS idx_messages_created ON public.messages(created_at DESC);

@@ -1,0 +1,2 @@
+154:CREATE OR REPLACE FUNCTION public.handle_new_user()
+174:CREATE OR REPLACE FUNCTION public.update_updated_at()

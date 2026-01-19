@@ -1,0 +1,4 @@
+src\app\api\contract\generate\route.ts:111:                { role: 'user', content: contractPrompt }
+src\lib\openrouter.ts:133:                { role: 'user', content: userPrompt }
+src\lib\openrouter.ts:173:                { role: 'user', content: prompt }
+src\lib\openrouter.ts:210:            { role: 'user', content: prompt }

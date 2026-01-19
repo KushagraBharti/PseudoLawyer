@@ -1,0 +1,4 @@
+src\lib\openrouter.ts:136:            temperature: 0.75,
+src\lib\openrouter.ts:176:            temperature: 0.8,
+src\lib\openrouter.ts:213:        temperature: 0.5,
+src\app\api\contract\generate\route.ts:114:            temperature: 0.3, // Lower temperature for more consistent legal language

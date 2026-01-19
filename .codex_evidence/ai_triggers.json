@@ -1,0 +1,12 @@
+{
+  "ai_trigger_phrases_count": 7,
+  "ai_trigger_phrases": [
+    "'@sudo'",
+    "'@ai'",
+    "'sudo,'",
+    "'hey sudo'",
+    "'hi sudo'",
+    "'sudo help'",
+    "'sudo?'"
+  ]
+}

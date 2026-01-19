@@ -1,0 +1,4 @@
+src\lib\openrouter.ts:129:        const response = await openrouter.chat.completions.create({
+src\lib\openrouter.ts:169:        const response = await openrouter.chat.completions.create({
+src\lib\openrouter.ts:206:    const response = await openrouter.chat.completions.create({
+src\app\api\contract\generate\route.ts:107:        const response = await openrouter.chat.completions.create({

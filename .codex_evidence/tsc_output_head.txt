@@ -1,0 +1,4 @@
+src/app/contracts/[id]/page.tsx(63,55): error TS2551: Property 'generatedText' does not exist on type 'FinalContractContent'. Did you mean 'generatedAt'?
+src/app/contracts/[id]/page.tsx(97,39): error TS2551: Property 'generatedText' does not exist on type 'FinalContractContent'. Did you mean 'generatedAt'?
+src/app/contracts/[id]/page.tsx(99,68): error TS2551: Property 'generatedText' does not exist on type 'FinalContractContent'. Did you mean 'generatedAt'?
+src/app/contracts/[id]/page.tsx(117,51): error TS2551: Property 'generatedText' does not exist on type 'FinalContractContent'. Did you mean 'generatedAt'?

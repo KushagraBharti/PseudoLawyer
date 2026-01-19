@@ -1,0 +1,49 @@
+
+FullName                                                                                             Length
+--------                                                                                             ------
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app                                
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\api                            
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\api\chat                       
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\api\chat\route.ts              5268
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\api\contract                   
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\api\contract\generate          
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\api\contract\generate\route.ts 6050
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\contracts                      
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\contracts\[id]                 
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\contracts\[id]\page.tsx        11794
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\contracts\page.tsx             6546
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\dashboard                      
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\dashboard\page.tsx             7220
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\globals.css                    2806
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\layout.tsx                     682
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\login                          
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\login\page.tsx                 4946
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\negotiations                   
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\negotiations\[id]              
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\negotiations\[id]\page.tsx     17881
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\negotiations\new               
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\negotiations\new\page.tsx      13612
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\negotiations\page.tsx          8137
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\page.tsx                       12947
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\register                       
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\app\register\page.tsx              6949
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\components                         
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\components\navigation              
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\components\navigation\Navbar.tsx   5077
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\components\ui                      
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\components\ui\Button.tsx           2573
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\components\ui\Card.tsx             1681
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\components\ui\Input.tsx            2566
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\hooks                              
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\hooks\use-auth.ts                  2036
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\hooks\use-chat.ts                  6426
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\lib                                
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\lib\openrouter.ts                  9209
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\lib\supabase                       
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\lib\supabase\client.ts             249
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\lib\supabase\server.ts             1067
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\middleware.ts                      2901
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\types                              
+C:\Users\Kushagra\OneDrive\Documents\CS Projects\PseudoLawyer\src\types\database.ts                  4072
+
+

@@ -1,0 +1,14 @@
+{
+  "model": "anthropic/claude-3.5-sonnet",
+  "runs": 5,
+  "durations_ms": [
+    997,
+    859,
+    981,
+    807,
+    897
+  ],
+  "p50_ms": 897,
+  "p95_ms": 981,
+  "measured_at": "2026-01-18T17:45:02.134Z"
+}

@@ -1,0 +1,26 @@
+
+> pseudolawyer@0.1.0 build
+> next build
+
+   Γû▓ Next.js 15.5.9
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ┬╖ serverActions
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (131kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ Γ£ô Compiled successfully in 13.0s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/app/contracts/[id]/page.tsx:63:55
+Type error: Property 'generatedText' does not exist on type 'FinalContractContent'. Did you mean 'generatedAt'?
+
+  61 |
+  62 |         // Get the LLM-generated contract text
+> 63 |         const generatedText = contract.final_content?.generatedText || '';
+     |                                                       ^
+  64 |
+  65 |         // Create text content with header
+  66 |         const content = `
+Next.js build worker exited with code: 1 and signal: null
