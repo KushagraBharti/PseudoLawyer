@@ -52,7 +52,7 @@ Sudo isn't just a chatbot—it's an active participant in your negotiation.
 Follow these steps to set up PseudoLawyer locally for development or testing.
 
 ### Prerequisites
-- Node.js 18+ installed
+- Node.js 18+ installed (I used bun instead)
 - A [Supabase](https://supabase.com/) project (Free tier works great)
 - An [OpenRouter](https://openrouter.ai/) API key
 
@@ -60,7 +60,7 @@ Follow these steps to set up PseudoLawyer locally for development or testing.
 ```bash
 git clone https://github.com/yourusername/pseudolawyer.git
 cd pseudolawyer
-npm install
+bun install
 ```
 
 ### 2. Configure Environment
@@ -88,7 +88,7 @@ Run the SQL migration files in your Supabase SQL Editor to set up tables and pol
 
 ### 4. Run Locally
 ```bash
-npm run dev
+bun run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 

@@ -20,20 +20,32 @@ export function useAuth() {
 
     useEffect(() => {
         const supabase = createClient();
+        let isMounted = true;
+
+        const handleAbort = (error: unknown) =>
+            error instanceof DOMException && error.name === 'AbortError';
 
         // Get initial session
         const getInitialSession = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
 
-            if (user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+                if (!isMounted) return;
 
-                setState({ user, profile, loading: false });
-            } else {
+                if (user) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+
+                    setState({ user, profile, loading: false });
+                } else {
+                    setState({ user: null, profile: null, loading: false });
+                }
+            } catch (error) {
+                if (handleAbort(error) || !isMounted) return;
+                console.error('Auth bootstrap failed', error);
                 setState({ user: null, profile: null, loading: false });
             }
         };
@@ -43,21 +55,33 @@ export function useAuth() {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                if (session?.user) {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', session.user.id)
-                        .single();
+                try {
+                    if (!isMounted) return;
 
-                    setState({ user: session.user, profile, loading: false });
-                } else {
+                    if (session?.user) {
+                        const { data: profile } = await supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', session.user.id)
+                            .single();
+
+                        if (!isMounted) return;
+                        setState({ user: session.user, profile, loading: false });
+                    } else {
+                        setState({ user: null, profile: null, loading: false });
+                    }
+                } catch (error) {
+                    if (handleAbort(error) || !isMounted) return;
+                    console.error('Auth state change handling failed', error);
                     setState({ user: null, profile: null, loading: false });
                 }
             }
         );
 
-        return () => subscription.unsubscribe();
+        return () => {
+            isMounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const signOut = async () => {
