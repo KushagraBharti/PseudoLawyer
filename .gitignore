@@ -35,3 +35,9 @@ next-env.d.ts
 
 # Testing
 coverage
+
+.codex
+.claude
+.gemini
+.opencode
+.agents

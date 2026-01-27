@@ -110,6 +110,7 @@ export interface FinalContractContent {
     terms: Record<string, string>;
     sections: Record<string, Record<string, string>>;
     generatedAt: string;
+    generatedText?: string;
 }
 
 export interface SignatureRecord {

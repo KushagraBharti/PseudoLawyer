@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Sparkles, ArrowRight, Check } from 'lucide-react';
+import { Logo } from '@/components/navigation/Navbar';
+import { ArrowRight, Mail, Lock, User, Check, Sparkles, Shield, Zap, Users } from 'lucide-react';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -51,72 +52,167 @@ export default function RegisterPage() {
         setSuccess(true);
         setLoading(false);
 
-        // Redirect to dashboard after a short delay
         setTimeout(() => {
             router.push('/dashboard');
             router.refresh();
         }, 2000);
     };
 
+    const benefits = [
+        { icon: Sparkles, text: 'AI-powered contract mediation' },
+        { icon: Shield, text: 'Secure & encrypted negotiations' },
+        { icon: Zap, text: 'Close deals in minutes, not weeks' },
+        { icon: Users, text: 'Real-time multi-party collaboration' },
+    ];
+
     return (
-        <div className="min-h-screen flex items-center justify-center px-4">
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-900/20 via-background to-accent-900/20" />
-            <div className="absolute top-20 left-20 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
+        <div className="min-h-screen flex">
+            {/* Left side - Visual */}
+            <div className="hidden lg:flex flex-1 items-center justify-center relative overflow-hidden">
+                {/* Background effects */}
+                <div className="absolute inset-0 bg-gradient-to-br from-magenta/10 via-void to-cyan/10" />
+                <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-magenta/20 blur-[100px] animate-float" />
+                <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-cyan/15 blur-[80px] animate-float-delayed" />
+                <div className="absolute inset-0 grid-pattern opacity-30" />
 
-            <div className="relative w-full max-w-md">
-                {/* Logo */}
-                <div className="flex justify-center mb-8">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
-                            <Sparkles className="w-7 h-7 text-white" />
-                        </div>
-                        <span className="text-2xl font-bold text-white group-hover:text-primary-400 transition-colors">
-                            PseudoLawyer
-                        </span>
-                    </Link>
-                </div>
+                {/* Content */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative z-10 max-w-lg p-8"
+                >
+                    {/* Icon */}
+                    <div className="
+                        w-20 h-20 rounded-2xl mb-8
+                        bg-gradient-to-br from-magenta via-magenta-dim to-cyan
+                        flex items-center justify-center
+                        shadow-glow-magenta
+                    ">
+                        <Sparkles className="w-10 h-10 text-white" />
+                    </div>
 
-                <Card>
-                    <CardHeader>
-                        <h1 className="text-2xl font-bold text-white text-center">Create your account</h1>
-                        <p className="text-white/60 text-center mt-1">Start negotiating contracts with AI</p>
-                    </CardHeader>
-                    <CardContent>
-                        {success ? (
-                            <div className="text-center py-6">
-                                <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                                    <Check className="w-8 h-8 text-green-400" />
+                    <h2 className="text-4xl font-bold font-display text-white mb-4">
+                        Join the Future of
+                        <br />
+                        <span className="gradient-text">Legal Agreements</span>
+                    </h2>
+                    <p className="text-white/60 text-lg leading-relaxed mb-10">
+                        Create an account and start negotiating contracts with
+                        the power of AI. No credit card required.
+                    </p>
+
+                    {/* Benefits */}
+                    <div className="space-y-4">
+                        {benefits.map((benefit, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.3 + index * 0.1 }}
+                                className="flex items-center gap-4"
+                            >
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <benefit.icon className="w-5 h-5 text-cyan" />
                                 </div>
-                                <h2 className="text-xl font-semibold text-white mb-2">Account created!</h2>
-                                <p className="text-white/60">Redirecting to dashboard...</p>
+                                <span className="text-white/80">{benefit.text}</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Right side - Form */}
+            <div className="flex-1 flex items-center justify-center p-8">
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="w-full max-w-md"
+                >
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center gap-3 group mb-12">
+                        <Logo />
+                        <div className="flex flex-col">
+                            <span className="text-xl font-bold font-display text-white group-hover:text-cyan transition-colors">
+                                PseudoLawyer
+                            </span>
+                            <span className="text-[10px] text-white/40 -mt-0.5 tracking-wider uppercase">
+                                AI Contract Platform
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* Header */}
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold font-display text-white mb-2">
+                            Create your account
+                        </h1>
+                        <p className="text-white/60">
+                            Start negotiating contracts with AI assistance
+                        </p>
+                    </div>
+
+                    {success ? (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-center py-12"
+                        >
+                            <div className="
+                                w-20 h-20 rounded-full mx-auto mb-6
+                                bg-gradient-to-br from-success to-success-dim
+                                flex items-center justify-center
+                                shadow-[0_0_40px_rgba(0,255,136,0.3)]
+                            ">
+                                <Check className="w-10 h-10 text-void" />
                             </div>
-                        ) : (
-                            <form onSubmit={handleRegister} className="space-y-4">
+                            <h2 className="text-2xl font-bold font-display text-white mb-2">
+                                Account created!
+                            </h2>
+                            <p className="text-white/60 mb-6">
+                                Redirecting you to the dashboard...
+                            </p>
+                            <div className="flex justify-center">
+                                <div className="w-8 h-8 border-2 border-cyan border-t-transparent rounded-full animate-spin" />
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <>
+                            {/* Form */}
+                            <form onSubmit={handleRegister} className="space-y-5">
                                 {error && (
-                                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="p-4 rounded-xl bg-error/10 border border-error/20 text-error text-sm flex items-center gap-3"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-error/20 flex items-center justify-center shrink-0">
+                                            <span className="text-lg">!</span>
+                                        </div>
                                         {error}
-                                    </div>
+                                    </motion.div>
                                 )}
 
                                 <Input
                                     id="fullName"
                                     type="text"
-                                    label="Full Name"
+                                    label="Full name"
                                     placeholder="John Doe"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
+                                    icon={<User className="w-4 h-4" />}
                                     required
                                 />
 
                                 <Input
                                     id="email"
                                     type="email"
-                                    label="Email"
+                                    label="Email address"
                                     placeholder="you@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    icon={<Mail className="w-4 h-4" />}
                                     required
                                 />
 
@@ -124,35 +220,47 @@ export default function RegisterPage() {
                                     id="password"
                                     type="password"
                                     label="Password"
-                                    placeholder="••••••••"
+                                    placeholder="Create a password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    icon={<Lock className="w-4 h-4" />}
+                                    hint="Must be at least 6 characters"
                                     required
                                 />
 
-                                <p className="text-xs text-white/40">
-                                    Password must be at least 6 characters
-                                </p>
-
-                                <Button type="submit" className="w-full" loading={loading}>
+                                <Button type="submit" className="w-full" size="lg" loading={loading}>
                                     Create Account
                                     <ArrowRight className="w-4 h-4" />
                                 </Button>
                             </form>
-                        )}
 
-                        {!success && (
-                            <div className="mt-6 text-center">
-                                <p className="text-white/60 text-sm">
-                                    Already have an account?{' '}
-                                    <Link href="/login" className="text-primary-400 hover:text-primary-300 font-medium">
-                                        Sign in
-                                    </Link>
-                                </p>
+                            {/* Terms */}
+                            <p className="mt-6 text-xs text-white/40 text-center">
+                                By creating an account, you agree to our Terms of Service
+                                and Privacy Policy.
+                            </p>
+
+                            {/* Divider */}
+                            <div className="relative my-8">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-white/10" />
+                                </div>
+                                <div className="relative flex justify-center">
+                                    <span className="px-4 text-sm text-white/40 bg-void">
+                                        Already have an account?
+                                    </span>
+                                </div>
                             </div>
-                        )}
-                    </CardContent>
-                </Card>
+
+                            {/* Login link */}
+                            <Link href="/login">
+                                <Button variant="secondary" className="w-full" size="lg">
+                                    Sign in instead
+                                </Button>
+                            </Link>
+                        </>
+                    )}
+                </motion.div>
             </div>
         </div>
     );
